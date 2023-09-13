@@ -1,0 +1,29 @@
+﻿<!-- glavni layout file -->
+@inherits LayoutComponentBase
+@inject IAccountService AccountService
+@inject NavigationManager NavigationManager
+
+@if (LoggedIn)
+{
+    <!-- nav -->
+    <nav class="navbar navbar-expand navbar-dark bg-dark">
+        <div class="navbar-nav">
+            <NavLink href="" Match="NavLinkMatch.All" class="nav-item nav-link">Početna</NavLink>
+            <NavLink href="sightings" class="nav-item nav-link">Smrčci</NavLink>
+            <NavLink href="account/logout" class="nav-item nav-link">Odjava</NavLink>
+            
+        </div>
+    </nav>
+}
+
+<div class="app-container @(LoggedIn ? "bg-light" : "")">
+    <Alert />
+    @Body
+</div>
+
+@code {
+    public bool LoggedIn
+    {
+        get { return AccountService.User != null; }
+    }
+}

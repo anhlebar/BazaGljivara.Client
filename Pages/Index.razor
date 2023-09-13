@@ -1,0 +1,24 @@
+﻿<!-- root/index web stranice  -->
+@page "/"
+@attribute [Authorize]
+@inject IAccountService AccountService
+
+<div class="p-4">
+    <div class="container">
+        <h1>@AccountService.User.FirstName</h1>
+        <p>
+            Ovdje možete promjeniti postavke računa i osobne podatke gljivara
+            <br/>
+            <NavLink href="@($"users/edit/{@AccountService.User.Id}")">Uređivanje mojih podataka</NavLink>
+            <p class="text-danger small">
+                Napomena : Vaši osobni podaci su tajni i neće se koristiti u druge svrhe
+            </p>
+        </p>
+      
+         <p>Ukoliko ste ugledali Smrčka u divljini dodajte lokaciju na popis i pomozite nam u očuvanju staništa
+              <br/>
+              <NavLink href="sightings">Popis lokacija smrčaka</NavLink>
+         </p>
+
+    </div>
+</div>

@@ -1,0 +1,72 @@
+﻿@page "/sightings"
+@attribute [Authorize]
+@inject ILocationsService LocationsService
+<!--
+ ToDo: 
+    - dosli smo do zapisivanja lokacija u bazu
+-->
+
+<h1>Smrčci</h1> 
+
+<p>
+    Ukoliko ste ugledali Smrčka u divljini molimo vas unesite podatke geolokacije u svrhu očuvanja biotopa ove korisne gljive.
+    <br/>
+    <br/>
+    <NavLink href="sightings/add" class="btn btn-sm btn-success mb-2">Dodaj Lokaciju</NavLink>
+    <br/>
+</p>
+
+<table class="table table-striped">
+                <thead>
+                    <tr>
+                      <th style="width: 40%">Nad. širina (Lat)</th>
+                      <th style="width: 40%">Nad. visina (Lng)</th>
+                      <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>     
+                  @if (locations != null)
+                        {
+                            foreach (var loc in locations)
+                            {
+                                    <tr>
+                                        <td>@loc.Lat</td>
+                                        <td>@loc.Lng</td>
+                                        <td style="white-space: nowrap">
+
+                                             <NavLink href="@($"sightings/edit/{loc.Id}")" class="btn btn-sm btn-primary mr-1">
+                                                 Uredi
+                                             </NavLink>
+                        
+                                             <button @onclick="@(() => DeleteLoc(loc.Id))" class="btn btn-sm btn-danger btn-delete-user">
+                                                Briši
+                                            </button>
+                                        
+                                        </td>
+                                    </tr>
+                            }
+                        }
+                </tbody>
+            </table>
+ 
+
+@code {
+
+    private IList<Location> locations;
+
+    protected override async Task OnInitializedAsync()
+    {
+       locations = await LocationsService.GetAll();
+    }
+
+    private async void DeleteLoc(string id)
+    {
+        var loc = locations.First(x => x.Id == id);
+        await LocationsService.Delete(id);
+        locations.Remove(loc);
+        StateHasChanged();
+    }
+
+}
+

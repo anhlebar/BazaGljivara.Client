@@ -1,0 +1,69 @@
+﻿@page "/sightings/edit/{Id}"
+@attribute [Authorize]
+@inject IAlertService AlertService
+@inject ILocationsService LocationsService
+@inject NavigationManager NavigationManager
+
+<h1>Uređivanje podataka lokacije</h1>
+@if (model != null)
+{
+    <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+        <DataAnnotationsValidator />
+        <div class="form-row">
+            <div class="form-group col">
+                <label>Nad. visina (Lat)</label>
+                    <InputText @bind-Value="model.Lat" class="form-control" />
+                <ValidationMessage For="@(() => model.Lat)" />
+            </div>
+            <div class="form-group col">
+                    <label>Nad. visina (Lng)</label>
+                    <InputText @bind-Value="model.Lng" class="form-control" />
+                <ValidationMessage For="@(() => model.Lng)" />
+            </div>
+        </div>
+       
+        <div class="form-group">
+            <button  class="btn btn-primary">
+                Spremi
+            </button>
+            <NavLink href="/sightings" class="btn btn-link">Odustani</NavLink>
+        </div>
+    </EditForm>
+}
+else
+{
+    <div class="text-center p-3">
+        <span class="spinner-border spinner-border-lg align-center"></span>
+    </div>
+}
+
+@code {
+    private BazaGljivara.Client.Models.Locations.EditLocation model;
+    private bool loading;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var loc = await LocationsService.GetById(Id);
+        model = new BazaGljivara.Client.Models.Locations.EditLocation(loc);
+    }
+
+    private async void OnValidSubmit()
+    {
+        loading = true;
+        try
+        {
+            await LocationsService.Update(Id, model);
+            AlertService.Success("Podaci su uspješno ažurirani!", keepAfterRouteChange: true);
+            NavigationManager.NavigateTo("/sightings");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+}
